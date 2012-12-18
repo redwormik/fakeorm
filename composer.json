@@ -1,5 +1,5 @@
 {
-    "name": "redwormik/FakeORM",
+    "name": "redwormik/fakeorm",
     "description" : "Nette\\Database based ORM-like library",
     "autoload": {
     	"classmap": ["FakeORM/"]
