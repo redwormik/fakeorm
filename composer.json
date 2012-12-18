@@ -1,0 +1,14 @@
+{
+    "name": "redwormik/FakeORM",
+    "description" : "Nette\\Database based ORM-like library",
+    "autoload": {
+    	"classmap": ["FakeORM/"]
+    },
+    "require": {
+        "php" : ">=5.3.0",
+        "nette/nette": "2.0.*"
+    },
+    "require-dev": {
+    	"nette/tester": "@dev"
+    }
+}
