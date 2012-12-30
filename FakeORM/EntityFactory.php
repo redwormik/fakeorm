@@ -22,7 +22,7 @@ class EntityFactory extends \Nette\Object {
 
 
     public function create($type = NULL, $data = NULL, Repository $repository = NULL) {
-        $class = Arrays::get($this->classes, $type, $this->classes[NULL]);
+        $class = Arrays::get($this->classes, $type, $this->classes[NULL]);
         return new $class($this->normalizeData($data),$repository);
     }
 

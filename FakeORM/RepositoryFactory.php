@@ -43,7 +43,7 @@ class RepositoryFactory extends \Nette\Object {
     public function create($type = NULL, $selection = NULL) {
         if ($selection === NULL)
             $selection = $this->selectionFactory->create($type);
-        $class = Arrays::get($this->classes, $type, $this->classes[NULL]);
+        $class = Arrays::get($this->classes, $type, $this->classes[NULL]);
         return new $class($type, $selection, $this->entityFactory);
     }
 

@@ -24,7 +24,7 @@ class SelectionFactory extends \Nette\Object {
 
 
     public function create($name) {
-        $table = Arrays::get($this->tables, $name, $name);
+        $table = Arrays::get($this->tables, $name, $name);
         return new Selection($table, $this->connection);
     }
 
