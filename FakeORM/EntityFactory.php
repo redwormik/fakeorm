@@ -3,6 +3,7 @@
 namespace FakeORM;
 
 use Nette\ArrayHash;
+use Nette\Utils\Arrays;
 
 /**
  * @author wormik
@@ -14,12 +15,14 @@ class EntityFactory extends \Nette\Object {
 
 
     public function __construct(array $classes = array()) {
+        if (!isset($classes[NULL]))
+        	$classes[NULL] = 'FakeORM\Entity';
         $this->classes = $classes;
     }
 
 
     public function create($type = NULL, $data = NULL, Repository $repository = NULL) {
-        $class = isset($this->classes[$type]) ? $this->classes[$type] : '\FakeORM\Entity';
+        $class = Arrays::get($this->classes, $type, $this->classes[NULL]);
         return new $class($this->normalizeData($data),$repository);
     }
 
