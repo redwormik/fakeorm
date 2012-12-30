@@ -3,6 +3,7 @@
 namespace FakeORM;
 
 use Nette\Database\Connection;
+use Nette\Utils\Arrays;
 
 /**
  * @author wormik
@@ -23,7 +24,7 @@ class SelectionFactory extends \Nette\Object {
 
 
     public function create($name) {
-        $table = isset($this->tables[$name]) ? $this->tables[$name] : $name;
+        $table = Arrays::get($this->tables, $name, $name);
         return new Selection($table, $this->connection);
     }
 

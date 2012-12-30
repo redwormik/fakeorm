@@ -1,6 +1,7 @@
 <?php
 
 namespace FakeORM;
+
 use Nette\Utils\Arrays;
 
 /**
