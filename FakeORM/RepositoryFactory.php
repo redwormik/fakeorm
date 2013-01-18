@@ -44,7 +44,7 @@ class RepositoryFactory extends \Nette\Object {
         if ($selection === NULL)
             $selection = $this->selectionFactory->create($type);
         $class = Arrays::get($this->classes, $type, $this->classes[NULL]);
-        return new $class($type, $selection, $this->entityFactory);
+        return new $class($type, $selection, $this->entityFactory, $this);
     }
 
 
@@ -55,7 +55,7 @@ class RepositoryFactory extends \Nette\Object {
 
 
     public function createRelated($type = NULL, $key = NULL, $selection = NULL) {
-        $type = Arrays::get($this->referenced, array($type,$key), $key);
+        $type = Arrays::get($this->related, array($type,$key), $key);
         return $this->create($type, $selection);
     }
 

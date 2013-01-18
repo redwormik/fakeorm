@@ -17,6 +17,9 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
 
     /** @var EntityFactory */
     protected $entityFactory;
+    
+    /** @var RepositoryFactory */
+    protected $repositoryFactory;
 
     /** @var array of $id => Entity */
     protected $data = array( );
@@ -25,12 +28,13 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
     protected $references = array( );
 
 
-    public function __construct($type, $selection, EntityFactory $entityFactory) {
+    public function __construct($type, $selection, EntityFactory $entityFactory, RepositoryFactory $repositoryFactory) {
         if (!($selection instanceof Selection || $selection instanceof GroupedSelection))
             throw new \Nette\InvalidArgumentException;
         $this->type = $type;
         $this->selection = $selection;
         $this->entityFactory = $entityFactory;
+        $this->repositoryFactory = $repositoryFactory;
         $this->selection->onExecute[] = callback($this, 'selectionExecuted');
     }
 
@@ -205,7 +209,7 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
      * @return Entity or FALSE if there is no row
      */
     public function fetch() {
-        return $this->getEntity($this->key(), $this->selection->fetch());
+        return $this->getEntity($this->selection->fetch());
     }
 
 
@@ -218,7 +222,7 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
     public function fetchPairs($key, $value = '') {
         $return = array( );
         foreach ($this as $row) {
-            $return[is_object($row[$key]) ? (string) $row[$key] : $row[$key]] = ($value ? $row[$value] : $row);
+            $return[is_object($row->$key) ? (string) $row->$key : $row->$key] = ($value ? $row->$value : $row);
         }
         return $return;
     }
@@ -226,7 +230,7 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
     /* MANIPULATION */
 
 
-    public function insert(Entity & $entity) {
+    public function insert(Entity $entity) {
         $row = $this->selection->insert($entity->getData());
         return $this->entityFactory->create($this->type, $row, $this);
     }
@@ -245,7 +249,7 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
 
 
     public function current() {
-        return $this->getEntity($this->key(), $this->selection->current());
+        return $this->getEntity($this->selection->current());
     }
 
 
@@ -275,7 +279,7 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
 
 
     public function offsetGet($offset) {
-        return $this->getEntity($offset, $this->selection->offsetGet($offset));
+        return $this->getEntity($this->selection->offsetGet($offset));
     }
 
 
@@ -297,14 +301,14 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
 
 
     /**
-     * @param int $id
      * @param ActiveRow $row
      */
-    protected function getEntity($id, $row) {
+    protected function getEntity($row) {
         if (!$row)
             return $row;
+        $id = $row->getSignature(TRUE);
         if (!isset($this->data[$id]))
-            $this->data[$id] = $this->entityFactory->create($this->type, $row);
+            $this->data[$id] = $this->entityFactory->create($this->type, $row, $this);
         return $this->data[$id];
     }
 
@@ -314,7 +318,7 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
         $table = $row->getTable();
         if (!isset($this->references[$key][$through]) || $this->references[$key][$through]->selection !== $table)
             $this->references[$key][$through] = $this->repositoryFactory->createReferenced($this->type, $key, $table);
-        return $this->related[$key][$through][$row->getPrimary()];
+        return $this->references[$key][$through][$row->getPrimary()];
     }
 
 

@@ -35,12 +35,23 @@ class Service extends \Nette\Object {
      */
     public function create($data = NULL) {
         $entity = $this->entityFactory->create($this->name);
-        if ($data === NULL)
-            return $entity;
-        foreach ($data as $key => $value)
-            $entity->$key = $value;
-        return $entity;
+        return $data === NULL ? $entity : $entity->setData($data);
     }
+
+
+    /**
+     * @param mixed $data
+     * @param Entity entity to update
+     * @return Entity
+     */
+    public function saveData($data = NULL, Entity $entity = NULL) {
+        if ($entity === NULL)
+            $entity = $this->create();
+        if ($data !== NULL)
+            $entity->setData($data);
+        return $this->save($entity);
+    }
+    
 
 
     /**
@@ -55,7 +66,11 @@ class Service extends \Nette\Object {
         $primary = $entity->getPrimary();
         if ($primary === NULL)
             return $this->createRepository()->insert($entity);
-        $this->createRepository()->find($primary)->update($entity->getData());
+        $data = $entity->getData();
+        if ($data instanceof ActiveRow)
+            $data->update();
+        else
+            $this->createRepository()->find($primary)->update($data);
         return $entity;
     }
 

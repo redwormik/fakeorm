@@ -38,6 +38,7 @@ class Entity extends \Nette\Object {
      * @return mixed or NULL
      */
     public function getPrimary() {
+        if (!$this->repository) return NULL;
         $column = $this->repository->getPrimary();
         return $this->data->$column;
     }
@@ -45,6 +46,14 @@ class Entity extends \Nette\Object {
 
     public function getData() {
         return $this->data;
+    }
+
+
+    public function setData($data) {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+        return $this;
     }
 
 
@@ -82,7 +91,7 @@ class Entity extends \Nette\Object {
         if (parent::__isset($name))
             parent::__set($name, $value);
         else
-            $this->row->$name = $value;
+            $this->data->$name = $value;
     }
 
 
@@ -91,7 +100,7 @@ class Entity extends \Nette\Object {
             return parent::__get($name);
         $value = $this->data->$name;
         if ($value instanceof ActiveRow)
-            return $this->repository->ref($name, NULL, $value);
+            $value = $this->repository->getReferenced($name, NULL, $value);
         return $value;
     }
 
@@ -107,5 +116,11 @@ class Entity extends \Nette\Object {
         else
             unset($this->data->$name);
     }
+
+
+    public function toArray() {
+        return ($this->data instanceof ActiveRow) ? $this->data->toArray() : (array) $this->data;
+    }
+
 
 }
