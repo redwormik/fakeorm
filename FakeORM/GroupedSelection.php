@@ -16,8 +16,8 @@ final class GroupedSelection extends NGroupedSelection {
         if ($this->rows !== NULL)
             return;
         parent::execute();
-        if ($this->accessed)
-            $this->accessed[$this->column] = TRUE;
+        if ($this->accessedColumns)
+            $this->accessedColumns[$this->column] = TRUE;
         $this->onExecute();
     }
 
