@@ -12,15 +12,6 @@ final class Selection extends NSelection {
     public $onExecute = array( );
 
     
-    public function insert($data) {
-        $row = parent::insert($data);
-        if ($row instanceof ActiveRow && $this->prevAccessed === NULL && $this->accessed === NULL) {
-            $this->accessed = $this->prevAccessed = array_fill_keys(array_keys($row->toArray()), TRUE);
-        }
-        return $row;
-    }
-
-    
     protected function execute() {
         if ($this->rows !== NULL)
             return;
