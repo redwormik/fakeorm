@@ -62,8 +62,8 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
      * @return Repository or NULL if there is no such row
      */
     public function get($key) {
-        $clone = clone $this->selection;
-        $clone->where($this->selection->getPrimary(), $key);
+        $clone = clone $this;
+        $clone->find($key);
         return $clone->fetch();
     }
 
