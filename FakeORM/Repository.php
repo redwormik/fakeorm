@@ -98,7 +98,11 @@ class Repository extends \Nette\Object implements \Iterator, \ArrayAccess, \Coun
      * @return Repository provides a fluent interface
      */
     public function where($condition, $parameters = array( )) {
-        call_user_func_array(array( $this->selection, 'where' ), func_get_args());
+        $parameters = func_get_args();
+        foreach ($parameters as $key => $param)
+            if ($param instanceof Repository)
+                $parameters[$key] = $param->selection;
+        call_user_func_array(array( $this->selection, 'where' ), $parameters);
         return $this;
     }
 
