@@ -12,6 +12,11 @@ final class GroupedSelection extends NGroupedSelection {
     public $onExecute = array( );
 
 
+    public function isExecuted() {
+        return $this->rows !== NULL;
+    }
+
+
     protected function execute() {
         if ($this->rows !== NULL)
             return;
